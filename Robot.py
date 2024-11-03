@@ -27,17 +27,17 @@ class Robot:
         self.T =  np.array([0,0 ,0])
         self.color = [1,0,0]
         self.target_deg = 0
+        self.diff = 0
 
     def setColor(self, r, g, b):
        self.color = [r, g, b]
 
     def update(self):
         # Calcular la diferencia angular más corta
-        diff = (self.target_deg - self.deg + 180) % 360 - 180
-        print("diff:", diff)
+        self.diff = (self.target_deg - self.deg + 180) % 360 - 180
 
-        if abs(diff) > 0:  # Solo actualizamos si hay una diferencia
-            self.deltadeg = 3 if diff > 0 else -3  # Determinar la dirección
+        if abs(self.diff) > 0:  # Solo actualizamos si hay una diferencia
+            self.deltadeg = 3 if self.diff > 0 else -3  # Determinar la dirección
             self.deg += self.deltadeg
 
             # Asegurar que deg siempre esté en el rango [0, 360)
@@ -151,21 +151,23 @@ class Robot:
         glEnd()
 
     def move_forward(self):
-        rad = math.radians(self.deg)
-        self.T[0] += math.cos(rad)
-        self.T[1] += math.sin(rad)
+        if abs(self.diff) == 0:
+            rad = math.radians(self.deg)
+            self.T[0] += math.cos(rad)
+            self.T[1] += math.sin(rad)
 
     def move_backward(self):
-        rad = math.radians(self.deg)
-        self.T[0] -= math.cos(rad)
-        self.T[1] -= math.sin(rad)
+        if abs(self.diff) == 0:
+            rad = math.radians(self.deg)
+            self.T[0] -= math.cos(rad)
+            self.T[1] -= math.sin(rad)
 
     def girar(self, angle):
         # Ajuste de orientación para solo 90 grados a la vez
         self.target_deg = (self.deg + angle)
         # Redondear a múltiplos de 90 grados para asegurar que solo se mueva a los ejes
         if self.target_deg < 0:
-            self.target_deg %= 360
+            self.target_deg += 360
         self.target_deg = round(self.target_deg / 90) * 90
         print("target_deg:", self.target_deg)
 

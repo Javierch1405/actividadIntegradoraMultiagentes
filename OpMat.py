@@ -24,10 +24,10 @@ class OpMat:
         self.R[1][1] = math.cos(deg)
         # print("algo2")
         # print(self.A @ self.R)
-        # print("self.A")
-        # print(self.A)
-        # print("self.R")
-        # print(self.R)
+        print("self.A")
+        print(self.A)
+        print("self.R")
+        print(self.R)
         # self.A = np.identity(3)
         self.A = self.A @ self.R
 
