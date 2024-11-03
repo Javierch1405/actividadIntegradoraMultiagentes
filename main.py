@@ -22,10 +22,7 @@ URL_BASE = "http://localhost:8000"
 r = requests.post(URL_BASE+ "/simulations", allow_redirects=False)
 datos = r.json()
 # datos se vuelve una lista con los datos de nuestros robots
-# print(datos)
 LOCATION = datos["Location"]
-# initialX = datos["agents"][0]["pos"][0]
-# initialY = datos["agents"][0]["pos"][1]
 
 
 
@@ -127,7 +124,6 @@ def display():
 
     for i in range(5):
         r = robots[i]
-        #position[0] = x position[1] =y
         robot_julia = datos["agents"][i]
         opera.push()
 
@@ -139,37 +135,9 @@ def display():
             r.girar(target_degree)
 
             while(abs(target_degree - r.deg) > 0):
-                # print("nose")
-                # print("target_degree: ", target_degree)
-                # print("r.deg: ", r.deg)
                 opera.push()
                 r.render()
                 opera.pop()
-
-
-        # if (robot_julia["found_box"] == True):
-            # y_pos = 1
-
-        # for j in range(1):
-        #     #moverse en x
-        #     if robot_julia["move"] == False:
-        #         if robot_julia["direction"][1] == 1:
-        #             print("Robot ", i, " esta viendo hacia la derecha")
-        #             r.move_forward()
-        #         else:
-        #             print("Robot ", i, " esta viendo hacia la izquierda")
-        #             r.move_backward()
-
-        #     #moverse en y
-        #     else:
-        #         if robot_julia["direction"][0] == 1:
-        #             print("Robot ", i, " esta subiendo")
-        #         else:
-        #             print("Robot ", i, " esta bajando")
-        #         r.girar(90 * robot_julia["direction"][0])
-        #         #algo pasa con el degree que no hace que se mueva lo mismo
-        #         r.move_forward()
-        #         r.girar(-90 * robot_julia["direction"][0])
 
 
 
@@ -221,19 +189,6 @@ def display():
 
 
     opera.pop()
-    # deg = (deg + deltaDeg ) % 360
-    # degrot = (degrot + deltaDeg) % 360
-
-    # robots[0].opera.push()
-
-
-
-
-    #  robots = datos["agents"][0]
-    # print("Robots position")
-    # # print(robots["pos"][0])
-    # print(robots["pos"][1])
-
 
 
 
@@ -264,9 +219,6 @@ def draw_point(x, y):
 
 # código principal ---------------------------------
 init()
-
-
-
 
 #Matrices para operaciones geometricas
 

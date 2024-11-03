@@ -122,19 +122,10 @@ function agent_step!(agent::Robot, model)
                 agent.direction[1] = -1
             end
 
-            #if is going up or down
-            # direction_up_down = 0
-            # if agent.move
-            #     # println("algo")
-            #     direction_up_down = 1
-            #     agent.move = false
-            # end
 
-            # agent.move = false
-            #in direction the first is right or left, and the second is up or down
             new_pos = agent.pos
-            #checking if is in the limits of x
-            #if I have reach any limit then change direction
+            # Checar si esta en los límites de x
+            # Si choco con los límites cambiar la dirección
             if (agent.pos[2] == agent.limit[1] && agent.direction[2] == -1) || (agent.pos[2] == agent.limit[2] && agent.direction[2] == 1)
                 agent.direction[2] *= -1
                 # agent.move = true
@@ -161,10 +152,6 @@ function agent_step!(agent::Robot, model)
                 new_pos = (agent.pos[1], agent.pos[2] + agent.direction[2])
             end
 
-            # new_pos = (agent.pos[1] + (direction_up_down * agent.direction[1]), agent.pos[2] + agent.direction[2])
-            # println(new_pos)
-            # new_pos = (agent.pos[1], agent.pos[2] + agent.direction[1])
-
 
             #Verificar si hay una caja en la posición en la que estamos
             for box in nearby_agents(agent, model, 1)
@@ -177,7 +164,7 @@ function agent_step!(agent::Robot, model)
             end
 
 
-            # Move the agent to the new position
+            # Mover el agente a la nueva posición
             move_agent!(agent, new_pos, model)
 
         end
@@ -208,13 +195,7 @@ function initialize_model()
     for i in 1:40
         add_agent!(Box, pos=(rand(1:50), rand(1:50)), model)
     end
-    # add_agent!(Box, pos=(50, 3), model)
     #Se agrega el estante teniendo la ultima id
-    # add_agent!(Box, pos=(1, 1), model)
     add_agent!(Estante, pos=(1, 1), model)
-    # add_agent!(Box, pos=(50, 1), model)
     return model
 end
-
-# model = initialize_model()
-# a = add_agent!(Ghost, pos=(3, 3), model)

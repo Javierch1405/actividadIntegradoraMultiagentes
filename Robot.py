@@ -36,7 +36,6 @@ class Robot:
 
         diff = (self.target_deg - self.deg + 180) % 360 - 180
 
-        # if(self.target_deg > self.deg):
         if abs(diff) > 0:  # Solo actualizamos si hay una diferencia
             self.deltadeg = 9 if diff > 0 else -9  # Determinar la dirección
             self.deg += self.deltadeg
@@ -44,7 +43,6 @@ class Robot:
             # Asegurar que deg siempre esté en el rango [0, 360)
             self.deg = self.deg % 360
 
-            # print("grados: ", self.deg)
 
     def render(self):
         self.opera.push()
@@ -168,9 +166,4 @@ class Robot:
         if self.target_deg < 0:
             self.target_deg += 360
         self.target_deg = angle
-
-        # self.deg = (self.deg + angle) % 360
-
-
-        # print("target_deg:", self.target_deg)
 
