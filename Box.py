@@ -4,18 +4,13 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpMat import OpMat
 
-class Robot:
+class Box:
 
     def __init__(self,opera):
         self.opera = opera
         self.points = np.array([
             #Coche
-            [-2, -1, 1], [2, -1, 1], [2, 1, 1],[-2, 1, 1],
-            #Llantas
-            [-2, 2, 1],[-1, 2, 1],[-1 ,1, 1],
-            [2,2,1],[1,2,1],[1,1,1],
-            [-2,-2,1],[-1,-2,1],[-1,-1,1],
-            [2,-2,1],[1,-1,1],[1,-2,1]
+            [1,1,1],[-1,1,1],[-1,-1,1],[1,-1,1]
              ])
         self.A = np.identity(3)
 
@@ -33,10 +28,8 @@ class Robot:
 
     def update(self):
         # Calcular la diferencia angular más corta
-
         diff = (self.target_deg - self.deg + 180) % 360 - 180
 
-        # if(self.target_deg > self.deg):
         if abs(diff) > 0:  # Solo actualizamos si hay una diferencia
             self.deltadeg = 9 if diff > 0 else -9  # Determinar la dirección
             self.deg += self.deltadeg
@@ -49,7 +42,7 @@ class Robot:
     def render(self):
         self.opera.push()
         self.opera.translation(self.T[0], self.T[1])
-        self.opera.rotation(self.deg)
+        self.opera.rotation(math.radians(self.deg))
         pointsR = self.points.copy()
         self.opera.mult_Points(pointsR)
 
@@ -59,39 +52,6 @@ class Robot:
         self.Bresenham(pointsR[1], pointsR[2])
         self.Bresenham(pointsR[2], pointsR[3])
         self.Bresenham(pointsR[3], pointsR[0])
-
-        #Llanta trasera izquierda
-        self.Bresenham(pointsR[3], pointsR[4])
-        self.Bresenham(pointsR[4], pointsR[5])
-        self.Bresenham(pointsR[5], pointsR[6])
-        self.Bresenham(pointsR[6], pointsR[3])
-
-        #Llanta delantera izquierda
-        self.Bresenham(pointsR[2], pointsR[7])
-        self.Bresenham(pointsR[7], pointsR[8])
-        self.Bresenham(pointsR[8], pointsR[9])
-        self.Bresenham(pointsR[9], pointsR[2])
-
-        #Llanta trasera derecha
-        self.Bresenham(pointsR[0], pointsR[10])
-        self.Bresenham(pointsR[10], pointsR[11])
-        self.Bresenham(pointsR[11], pointsR[12])
-        self.Bresenham(pointsR[12], pointsR[0])
-
-        #Llanta delantera derecha
-        self.Bresenham(pointsR[1], pointsR[13])
-        self.Bresenham(pointsR[13], pointsR[15])
-        self.Bresenham(pointsR[15], pointsR[14])
-        self.Bresenham(pointsR[14], pointsR[1])
-
-        # Front indicator
-        glColor3f(1.0, 0.0, 0.0)  # Red color for the front indicator
-        center_x = (pointsR[0][0] + pointsR[2][0]) / 2
-        center_y = (pointsR[0][1] + pointsR[2][1]) / 2
-        front_x = (pointsR[1][0] + pointsR[2][0]) / 2
-        front_y = (pointsR[1][1] + pointsR[2][1]) / 2
-        self.Bresenham((center_x, center_y), (front_x, front_y))
-
         self.opera.pop()
         self.update()
 
@@ -162,14 +122,13 @@ class Robot:
         self.T[1] -= math.sin(rad)
 
     def girar(self, angle):
-        # Ajuste de orientación para solo 90 grados a la vez
-        self.target_deg = (self.deg + angle)
-        # Redondear a múltiplos de 90 grados para asegurar que solo se mueva a los ejes
-        if self.target_deg < 0:
-            self.target_deg += 360
-        self.target_deg = angle
-
-        # self.deg = (self.deg + angle) % 360
+        # # Ajuste de orientación para solo 90 grados a la vez
+        # self.target_deg = (self.deg + angle)
+        # # Redondear a múltiplos de 90 grados para asegurar que solo se mueva a los ejes
+        # if self.target_deg < 0:
+        #     self.target_deg += 360
+        # self.target_deg = round(self.target_deg / 90) * 90
+        self.deg = (self.deg + angle) % 360
 
 
         # print("target_deg:", self.target_deg)

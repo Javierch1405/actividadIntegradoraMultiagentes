@@ -9,7 +9,6 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpMat import OpMat
 from Robot import Robot
-from Box import Box
 from OpenGL.GLUT import *
 
 # necesario para julia
@@ -33,16 +32,12 @@ opera = OpMat()
 # t2 = Robot(opera)
 #Se crea la lista que contendra todos los robots
 robots = []
-boxes = []
 
-for i in range(5):
+for i in range(len(datos["agents"])):
     robots.append(Robot(opera))
 
-for i in range(5,len(datos["agents"])):
-    boxes.append(Box(opera))
 
 
-box_render = Box(opera)
 
 screen_width = 600
 screen_height = 600
@@ -70,13 +65,12 @@ def Axis():
     glEnd()
     glLineWidth(1.0)
 
-#Cauantas cajas hay al prnicipio
-cantidad_de_cajas = len(datos["agents"]) - 6
+
+
 #variables de control
 deg = 1.57
 deltaDeg = 0
 degrot = 0
-scale = 3
 def display():
     global deg
     global deg1
@@ -84,117 +78,25 @@ def display():
     global delta_degrot
     glClear(GL_COLOR_BUFFER_BIT)
     Axis()
-    response = requests.get(URL_BASE + LOCATION)
     opera.push()
-    datos = response.json()
-    # response = requests.get(URL_BASE + LOCATION)
-
-    # Debugging step: print the raw response content
-    # print(response.content)
-
-    try:
-        datos = response.json()
-    except requests.exceptions.JSONDecodeError as e:
-        print(f"JSON decode error: {e}")
-        return
-
-
-
-
     #empezaran viendo hacia la derecha porque su ruta sera
     # a la derecha
     opera.rotation(0)
     #se escalana a 5
+    opera.scale(10,10)
 
-    opera.scale(scale*5,scale*5)
-
-
-
-    #todos las cajas, excepto el estante
-    for i in range(5, len(datos["agents"]) - 1):
-        #boxes es la lista con objetos box
-        b = boxes[i-5]
-        opera.push()
-        #box julia es el agente de julia
-        box_julia = datos["agents"][i]
-        opera.translation((box_julia["pos"][1] - 1) * scale,(box_julia["pos"][0] - 1 ) * scale)
-        b.render()
-        opera.pop()
-
-
-    for i in range(5):
+    position = 0
+    for i in range(robots):
         r = robots[i]
-        #position[0] = x position[1] =y
         robot_julia = datos["agents"][i]
         opera.push()
-
-        target_degree = robot_julia["looking_at"]
-
+        opera.translation(position,0)
         r.setColor(1,1,1)
-        if abs(target_degree - r.deg) > 0:
-            r.girar(target_degree)
-
-            while(abs(target_degree - r.deg) > 0):
-                opera.push()
-                r.render()
-                opera.pop()
-
-        opera.translation((robot_julia["pos"][1] - 1) * scale,(robot_julia["pos"][0] - 1 ) * scale)
-        # if (robot_julia["found_box"] == True):
-            # y_pos = 1
-
-        # for j in range(1):
-        #     #moverse en x
-        #     if robot_julia["move"] == False:
-        #         if robot_julia["direction"][1] == 1:
-        #             print("Robot ", i, " esta viendo hacia la derecha")
-        #             r.move_forward()
-        #         else:
-        #             print("Robot ", i, " esta viendo hacia la izquierda")
-        #             r.move_backward()
-
-        #     #moverse en y
-        #     else:
-        #         if robot_julia["direction"][0] == 1:
-        #             print("Robot ", i, " esta subiendo")
-        #         else:
-        #             print("Robot ", i, " esta bajando")
-        #         r.girar(90 * robot_julia["direction"][0])
-        #         #algo pasa con el degree que no hace que se mueva lo mismo
-        #         r.move_forward()
-        #         r.girar(-90 * robot_julia["direction"][0])
-
-
-
-
         r.render()
-
-
         opera.pop()
-
-    #Se busca el ultimo index porque el estante siempre es el ultimo
-    ultimo_index = len(datos["agents"]) - 1
-
-    pos_caja_x = 0
-    print("Cantidad de cajas: ", datos["agents"][ultimo_index]["cantidad_cajas"])
-    for i in range (datos["agents"][ultimo_index]["cantidad_cajas"]):
-        if(i % 5 == 0 and i > 0):
-            pos_caja_x += 3
-        else:
-            pos_caja_x += 0.3
+        position += 10
 
 
-
-        opera.push()
-        opera.translation(pos_caja_x *scale,51*scale)
-        box_render.render()
-        opera.pop()
-
-    if(datos["agents"][ultimo_index]["cantidad_cajas"] == cantidad_de_cajas):
-        print("Se han recolectado todas las cajas")
-        print("Se ha terminado la simulacion")
-        print(datos["agents"][ultimo_index]["movimientos_robots"])
-        exit(0)
 
 
 
@@ -202,12 +104,13 @@ def display():
     # deg = (deg + deltaDeg ) % 360
     # degrot = (degrot + deltaDeg) % 360
 
-    # robots[0].opera.push()
+    robots[0].opera.push()
     print(len(robots))
 
 
 
-
+    response = requests.get(URL_BASE + LOCATION)
+    datos = response.json()
     #  robots = datos["agents"][0]
     # print("Robots position")
     # # print(robots["pos"][0])
@@ -223,8 +126,7 @@ def init():
 
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-
-    gluOrtho2D(-100, 2500, -100, 2500)
+    gluOrtho2D(-900, 900, -600, 600)
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
     glClearColor(0, 0, 0, 0)

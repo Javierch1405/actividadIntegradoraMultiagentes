@@ -18,16 +18,18 @@ class OpMat:
 
 
     def rotation(self, deg):
+        #los deg tienen que ser convertidos a radianes
+        deg = math.radians(deg)
         self.R[0][0] = math.cos(deg)
         self.R[0][1] = - math.sin(deg)
         self.R[1][0] = math.sin(deg)
         self.R[1][1] = math.cos(deg)
         # print("algo2")
         # print(self.A @ self.R)
-        print("self.A")
-        print(self.A)
-        print("self.R")
-        print(self.R)
+        # print("self.A")
+        # print(self.A)
+        # print("self.R")
+        # print(self.R)
         # self.A = np.identity(3)
         self.A = self.A @ self.R
 
