@@ -22,7 +22,7 @@ route("/simulations", method=POST) do
 end
 
 route("/simulations/:id") do
-    println(payload(:id))
+    # println(payload(:id))
     model = instances[payload(:id)]
     run!(model, 1)
     agents = []

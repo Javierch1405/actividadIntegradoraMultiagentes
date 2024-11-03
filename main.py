@@ -11,6 +11,9 @@ from OpMat import OpMat
 from Robot import Robot
 from Box import Box
 from OpenGL.GLUT import *
+import time
+
+start_time = time.time()
 
 # necesario para julia
 import requests
@@ -19,7 +22,7 @@ URL_BASE = "http://localhost:8000"
 r = requests.post(URL_BASE+ "/simulations", allow_redirects=False)
 datos = r.json()
 # datos se vuelve una lista con los datos de nuestros robots
-print(datos)
+# print(datos)
 LOCATION = datos["Location"]
 # initialX = datos["agents"][0]["pos"][0]
 # initialY = datos["agents"][0]["pos"][1]
@@ -130,16 +133,20 @@ def display():
 
         target_degree = robot_julia["looking_at"]
 
+        opera.translation((robot_julia["pos"][1] - 1) * scale,(robot_julia["pos"][0] - 1 ) * scale)
         r.setColor(1,1,1)
         if abs(target_degree - r.deg) > 0:
             r.girar(target_degree)
 
             while(abs(target_degree - r.deg) > 0):
+                # print("nose")
+                # print("target_degree: ", target_degree)
+                # print("r.deg: ", r.deg)
                 opera.push()
                 r.render()
                 opera.pop()
 
-        opera.translation((robot_julia["pos"][1] - 1) * scale,(robot_julia["pos"][0] - 1 ) * scale)
+
         # if (robot_julia["found_box"] == True):
             # y_pos = 1
 
@@ -176,7 +183,7 @@ def display():
     ultimo_index = len(datos["agents"]) - 1
 
     pos_caja_x = 0
-    print("Cantidad de cajas: ", datos["agents"][ultimo_index]["cantidad_cajas"])
+    # print("Cantidad de cajas: ", datos["agents"][ultimo_index]["cantidad_cajas"])
     for i in range (datos["agents"][ultimo_index]["cantidad_cajas"]):
         if(i % 5 == 0 and i > 0):
             pos_caja_x += 3
@@ -193,7 +200,22 @@ def display():
     if(datos["agents"][ultimo_index]["cantidad_cajas"] == cantidad_de_cajas):
         print("Se han recolectado todas las cajas")
         print("Se ha terminado la simulacion")
-        print(datos["agents"][ultimo_index]["movimientos_robots"])
+        movimientos_totales = []
+        movimientos = []
+        #se itera por cada robot y se obtiene su movimiento
+        for i in range(5):
+            movimientos.append( datos["agents"][i]["movimientos"])
+
+        mean = sum(movimientos) / len(movimientos)
+
+        variance = sum(((x - mean) ** 2) for x in movimientos) / len(movimientos)
+        std_dev = math.sqrt(variance)
+
+        print("Movimientos totales: ", sum(movimientos))
+        print("Movimientos promedio: ", mean)
+        print("Desviacion estandar: ", std_dev)
+        end_time = time.time()
+        print("Tiempo de ejecucion: ", end_time - start_time)
         exit(0)
 
 
@@ -203,7 +225,6 @@ def display():
     # degrot = (degrot + deltaDeg) % 360
 
     # robots[0].opera.push()
-    print(len(robots))
 
 
 
@@ -277,18 +298,6 @@ def Axis():
 
 done = False
 while not done:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            done = True
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP:
-                t1.move_forward()  # Mueve el carrito hacia adelante
-            elif event.key == pygame.K_DOWN:
-                t1.move_backward()  # Mueve el carrito hacia atrás
-            elif event.key == pygame.K_LEFT:
-                t1.girar(90)  # Gira 90 grados a la izquierda
-            elif event.key == pygame.K_RIGHT:
-                t1.girar(-90)  # Gira 90 grados a la derecha
 
     glClear(GL_COLOR_BUFFER_BIT)
     Axis()
